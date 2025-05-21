@@ -954,11 +954,16 @@ class StaticFileHandler : public BaseSampleHandler {
         // done
         file_.reset();
         VLOG(4) << "Read EOF";
-        evb->runInEventBaseThread([this] { txn_->sendEOM(); });
+        evb->runInEventBaseThread([this] {
+           txn_->sendEOM(); 
+           VLOG(1) << "I am here123";
+          });
         break;
       } else {
+        VLOG(1) << "Sending to runin:" << rc;
         buf.postallocate(rc);
         evb->runInEventBaseThread([this, body = buf.move()]() mutable {
+          VLOG(1) << "I am here size:" << body->length();
           txn_->sendBody(std::move(body));
         });
       }

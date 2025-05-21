@@ -52,6 +52,7 @@ void startServer(
       sendKnobFrame(session, ("Hello, World from Server!"));
     };
   }
+#if 1
   HQServer server(params, dispatchFn, std::move(onTransportReadyFn));
   if (statsFactory) {
     server.setStatsFactory(std::move(statsFactory));
@@ -60,6 +61,7 @@ void startServer(
   server.start();
   // Wait until the quic server initializes
   server.getAddress();
+#endif
   h2server.join();
   server.stop();
 }

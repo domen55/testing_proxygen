@@ -8,6 +8,8 @@
 
 #include "SampleHandlers.h"
 
+#include "FileRingHandler.h"
+
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <proxygen/lib/utils/Logging.h>
@@ -71,7 +73,8 @@ HTTPTransactionHandler* Dispatcher::getRequestHandler(HTTPMessage* msg) {
   // }
 
   if (!FLAGS_static_root.empty()) {
-    return new StaticFileHandler(params_, FLAGS_static_root);
+    //return new StaticFileHandler(params_, FLAGS_static_root);
+    return new StaticFileUringHandler(params_, FLAGS_static_root);
   }
   if (boost::algorithm::starts_with(path, "/delay")) {
     return new DelayHandler(params_,

@@ -10,6 +10,11 @@
 #include "FizzContext.h"
 #include "H2Server.h"
 
+#include <folly/experimental/io/IoUringEventBaseLocal.h>
+#include <folly/system/HardwareConcurrency.h>
+#include <algorithm>
+
+std::shared_ptr<folly::IOThreadPoolExecutorBase> getDefaultIOUringExecutor(bool enableThreadIdCollection);
 namespace quic::samples {
 
 using namespace proxygen;
@@ -72,24 +77,37 @@ std::unique_ptr<H2Server::AcceptorConfig> H2Server::createServerAcceptorConfig(
 std::thread H2Server::run(
     const HQToolServerParams& params,
     HTTPTransactionHandlerProvider httpTransactionHandlerProvider) {
+    //auto executor = getDefaultIOUringExecutor(true);
+    //auto *evbm = folly::EventBaseManager::get();
+    //auto *ev_backend = evbm->getEventBase()->getBackend();
+    // use the same EventBase for the main thread
 
-  // Start HTTPServer mainloop in a separate thread
-  std::thread t([params = folly::copy(params),
-                 httpTransactionHandlerProvider =
-                     std::move(httpTransactionHandlerProvider)]() mutable {
+
+    // Start HTTPServer mainloop in a separate thread
+    //, executor = std::move(executor)
+    std::thread t([params = folly::copy(params),
+                   httpTransactionHandlerProvider =
+                       std::move(httpTransactionHandlerProvider)
+                       //,executor, evbm
+                       ]() mutable
+                  {
     {
-      auto acceptorConfig = createServerAcceptorConfig(params);
+        // auto *evbm1 = folly::EventBaseManager::get();
+        // auto *ev_base = evbm1->getEventBase();
+        // auto *ev_backend = ev_base->getBackend();
+        // assert(evbm==evbm1);
+   
+        auto acceptorConfig = createServerAcceptorConfig(params);
       auto serverOptions = createServerOptions(
           params, std::move(httpTransactionHandlerProvider));
       proxygen::HTTPServer server(std::move(*serverOptions));
       server.bind(std::move(*acceptorConfig));
-      server.start();
+      server.start(nullptr, nullptr, nullptr, nullptr);//executor
     }
     // HTTPServer traps the SIGINT.  resignal HQServer
-    raise(SIGINT);
-  });
+    raise(SIGINT); });
 
-  return t;
+    return t;
 }
 
 } // namespace quic::samples
