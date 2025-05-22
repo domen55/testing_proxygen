@@ -19,5 +19,8 @@ target_sources(webapp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/HQClient.h)
 target_sources(webapp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/HQLoggerHelper.cpp)
 target_sources(webapp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/HQParams.h)
 target_sources(webapp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/HQServerModule.cpp)
+
 target_sources(webapp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/SampleHandlers.cpp)
 target_sources(webapp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/SampleHandlers.h)
+target_sources(webapp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/WebSocketHandler.cpp)
+target_sources(webapp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/WebSocketHandler.h)

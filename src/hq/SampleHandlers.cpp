@@ -9,7 +9,7 @@
 #include "SampleHandlers.h"
 
 #include "FileRingHandler.h"
-
+#include "WebSocketHandler.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <proxygen/lib/utils/Logging.h>
@@ -50,6 +50,11 @@ HTTPTransactionHandler* Dispatcher::getRequestHandler(HTTPMessage* msg) {
     shouldPassHealthChecks = false;
     return new HealthCheckHandler(false, params_);
   }
+  if (path == "/wss")
+  {
+    return new websockethandler::WebSocketHandler(params_, folly::EventBaseManager::get()->getEventBase());
+  }
+
   // if (path == "/wait" || path == "/release") {
   //   return new WaitReleaseHandler(
   //       folly::EventBaseManager::get()->getEventBase(), params_);
